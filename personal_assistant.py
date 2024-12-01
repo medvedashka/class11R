@@ -1,13 +1,14 @@
-import json
-from note import Note, NoteManager
-from task import Task, TaskManager
+from note import NoteManager
+from task import TaskManager
+from contact import ContactManager
 
 def print_menu():
     print("Добро пожаловать в Персональный помощник!")
     print("Выберите действие:")
     print("1. Управление заметками")
     print("2. Управление задачами")
-    print("3. Выход")
+    print("3. Управление контактами")
+    print("4. Выход")
 
 def note_menu():
     print("1. Создать новую заметку")
@@ -27,9 +28,20 @@ def task_menu():
     print("6. Импорт задач из CSV")
     print("7. Назад")
 
+def contact_menu():
+    print("1. Создать новый контакт")
+    print("2. Просмотреть все контакты")
+    print("3. Редактировать контакт")
+    print("4. Удалить контакт")
+    print("5. Экспорт контактов в CSV")
+    print("6. Импорт контактов из CSV")
+    print("7. Поиск контакта")
+    print("8. Назад")
+
 def main():
     note_manager = NoteManager()
     task_manager = TaskManager()
+    contact_manager = ContactManager()
 
     while True:
         print_menu()
@@ -131,7 +143,69 @@ def main():
                 else:
                     print("Неверный выбор. Попробуйте снова.")
 
-        elif choice == '3':
+        if choice == '3':
+            while True:
+                contact_menu()
+                contact_choice = input("Ваш выбор: ")
+
+                if contact_choice == '1':
+                    name = input("Введите имя контакта: ")
+                    phone = input("Введите номер телефона: ")
+                    email = input("Введите email: ")
+                    contact_manager.add_contact(name, phone, email)
+                    print("Контакт добавлен!")
+
+                elif contact_choice == '2':
+                    contacts = contact_manager.get_all_contacts()
+                    if contacts:
+                        for contact in contacts:
+                            print(f"ID: {contact.id}, Имя: {contact.name}, Телефон: {contact.phone}, Email: {contact.email}")
+                    else:
+                        print("Нет контактов.")
+
+                elif contact_choice == '3':
+                    contact_id = int(input("Введите ID контакта для редактирования: "))
+                    contact = contact_manager.get_contact_by_id(contact_id)
+                    if contact:
+                        new_name = input(f"Введите новое имя (старое: {contact.name}): ")
+                        new_phone = input(f"Введите новый номер телефона (старое: {contact.phone}): ")
+                        new_email = input(f"Введите новый email (старый: {contact.email}): ")
+                        contact_manager.update_contact(contact_id, new_name, new_phone, new_email)
+                        print("Контакт обновлён!")
+                    else:
+                        print("Контакт не найден.")
+
+                elif contact_choice == '4':
+                    contact_id = int(input("Введите ID контакта для удаления: "))
+                    if contact_manager.delete_contact(contact_id):
+                        print("Контакт удалён!")
+                    else:
+                        print("Контакт не найден.")
+
+                elif contact_choice == '5':
+                    filename = input("Введите имя CSV файла для экспорта: ")
+                    contact_manager.export_contacts_to_csv(filename)
+                    print(f"Контакты экспортированы в {filename}")
+
+                elif contact_choice == '6':
+                    filename = input("Введите имя CSV файла для импорта: ")
+                    contact_manager.import_contacts_from_csv(filename)
+                    print(f"Контакты импортированы из {filename}")
+
+                elif contact_choice == '7':
+                    query = input("Введите имя или номер телефона для поиска: ")
+                    results = contact_manager.get_contact_by_name_or_phone(query)
+                    if results:
+                        for contact in results:
+                            print(f"ID: {contact.id}, Имя: {contact.name}, Телефон: {contact.phone}, Email: {contact.email}")
+                    else:
+                        print("Контакты не найдены.")
+
+                elif contact_choice == '8':
+                    break
+                else:
+                    print("Неверный выбор. Попробуйте снова.")
+        elif choice == '4':
             print("До свидания!")
             break
         else:

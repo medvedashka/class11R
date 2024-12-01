@@ -1,6 +1,7 @@
 from note import NoteManager
 from task import TaskManager
 from contact import ContactManager
+from finance import FinanceManager
 
 def print_menu():
     print("Добро пожаловать в Персональный помощник!")
@@ -8,7 +9,8 @@ def print_menu():
     print("1. Управление заметками")
     print("2. Управление задачами")
     print("3. Управление контактами")
-    print("4. Выход")
+    print("4. Управление финансовыми записями")
+    print("5. Выход")
 
 def note_menu():
     print("1. Создать новую заметку")
@@ -38,10 +40,19 @@ def contact_menu():
     print("7. Поиск контакта")
     print("8. Назад")
 
+def finance_menu():
+    print("1. Добавить новую финансовую запись")
+    print("2. Просмотреть все финансовые записи")
+    print("3. Генерировать отчёт за период")
+    print("4. Экспортировать записи в CSV")
+    print("5. Импортировать записи из CSV")
+    print("6. Назад")
+
 def main():
     note_manager = NoteManager()
     task_manager = TaskManager()
     contact_manager = ContactManager()
+    finance_manager = FinanceManager()
 
     while True:
         print_menu()
@@ -206,6 +217,43 @@ def main():
                 else:
                     print("Неверный выбор. Попробуйте снова.")
         elif choice == '4':
+            while True:
+                finance_menu()
+                finance_choice = input("Ваш выбор: ")
+                if finance_choice == '1':
+                    amount = float(input("Введите сумму операции: "))
+                    category = input("Введите категорию: ")
+                    date = input("Введите дату операции (ДД-ММ-ГГГГ): ")
+                    description = input("Введите описание операции: ")
+                    finance_manager.add_record(amount, category, date, description)
+                    print("Финансовая запись добавлена!")
+                elif finance_choice == '2':
+                    records = finance_manager.get_all_records()
+                    if records:
+                        for record in records:
+                            print(f"ID: {record.id}, Сумма: {record.amount}, Категория: {record.category}, Дата: {record.date}, Описание: {record.description}")
+                    else:
+                        print("Нет финансовых записей.")
+                elif finance_choice == '3':
+                    start_date = input("Введите начальную дату (ДД-ММ-ГГГГ): ")
+                    end_date = input("Введите конечную дату (ДД-ММ-ГГГГ): ")
+                    report = finance_manager.generate_report(start_date, end_date)
+                    print("Отчёт за период:")
+                    for record in report:
+                        print(record)
+                elif finance_choice == '4':
+                    filename = input("Введите имя CSV файла для экспорта: ")
+                    finance_manager.export_records_to_csv(filename)
+                    print(f"Финансовые записи экспортированы в {filename}")
+                elif finance_choice == '5':
+                    filename = input("Введите имя CSV файла для импорта: ")
+                    finance_manager.import_records_from_csv(filename)
+                    print(f"Финансовые записи импортированы из {filename}")
+                elif finance_choice == '6':
+                    break
+                else:
+                    print("Неверный выбор. Попробуйте снова.")
+        elif choice == '5':
             print("До свидания!")
             break
         else:
